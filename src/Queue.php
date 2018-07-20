@@ -10,6 +10,7 @@
         private $action_string;
         private $added_at;
         private $started_at;
+        private $attempts;
 
         const ACTION_RUN_STATIC = 1;
         const ACTION_RUN_INSTANCE = 2;
@@ -18,9 +19,10 @@
         public function __construct(int $action_type) {
             $this->action_type = $action_type;
             $this->added_at = date('Y-m-d H:i:s');
+            $this->attempts = 0;
         }
 
-        public function setAction(string $action) {
+        public function setAction($action) {
             $this->action_string = $action;            
             return $this;
         }
@@ -56,6 +58,7 @@
                 'action_type' => $this->action_type,
                 'started_at' => $this->started_at,
                 'added_at' => $this->added_at,
+                'attempts' => $this->attempts,
             ];
         }
 
@@ -63,12 +66,20 @@
             return $this->queue;
         }
 
+        public function getAction() {
+            return [
+                'type' => $this->action_type,
+                'action' => $this->action_string,
+            ];
+        }
+
         public function getAddedAtAsDateTime() {
             return DateTime::createFromFormat('Y-m-d H:i:s', $this->added_at);
         }
 
         public function setStarted() {
-            $this->started_at = date('Y-m-d H:i:s');
+            if (!isset($this->started_at)) $this->started_at = date('Y-m-d H:i:s');
+            $this->attempts++;
             return $this;
         }
 
@@ -79,6 +90,7 @@
             $queueObj->action_string = $queue['action'];
             $queueObj->started_at = $queue['started_at'];
             $queueObj->added_at = $queue['added_at'];
+            $queueObj->attempts = $queue['attempts'];
             return $queueObj;
         }
 
@@ -89,11 +101,12 @@
         }
 
         public function validate() {
-            if (empty($this->action_string)) throw new Exception("Queue action string cannot be empty");
-            if (empty($this->action_string)) throw new Exception("Queue action type cannot be empty");
-            if (!in_array($this->action_type, [Queue::ACTION_RUN_STATIC, Queue::ACTION_RUN_INSTANCE, Queue::ACTION_RUN_FILE]))
+            if (empty($this->action_string)) { throw new Exception("Queue action string cannot be empty"); }
+            if (empty($this->action_string)) { throw new Exception("Queue action type cannot be empty"); }
+            if (!in_array($this->action_type, [Queue::ACTION_RUN_STATIC, Queue::ACTION_RUN_INSTANCE, Queue::ACTION_RUN_FILE])) {
                 throw new Exception("Invalid queue action type");
-            if (empty($this->queue)) throw new Exception("Queue name cannot be empty");
+            }
+            if (empty($this->queue)) { throw new Exception("Queue name cannot be empty"); }
             return $this;
         }
 
