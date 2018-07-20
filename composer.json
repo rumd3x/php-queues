@@ -1,5 +1,5 @@
 {
-    "name": "rumd3x/queues",
+    "name": "rumd3x/php-queues",
     "description": "A simple driver for managing queues in php.",
     "type": "project",
     "license": "MIT",
