@@ -20,7 +20,6 @@ And then run
 ### Adding a Queue
 There are three ways of adding a script to the execution queue.
 ```php
-<?php
 use Rumd3x\Queues\Queue;
 $queue = new Queue(Queue::ACTION_RUN_FILE);
 $queue->setAction('/var/www/test.php')->pushTo('example_queue');
