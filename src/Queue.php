@@ -91,6 +91,7 @@
             $queueObj->started_at = $queue['started_at'];
             $queueObj->added_at = $queue['added_at'];
             $queueObj->attempts = $queue['attempts'];
+            $queueObj->validate();
             return $queueObj;
         }
 
@@ -107,6 +108,9 @@
                 throw new Exception("Invalid queue action type");
             }
             if (empty($this->queue)) { throw new Exception("Queue name cannot be empty"); }
+            if (empty($this->attempts)) { $this->attempts = 0; }
+            if (empty($this->added_at)) { $this->added_at = date('Y-m-d H:i:s'); }
+            if (empty($this->started_at)) { $this->started_at = null; }
             return $this;
         }
 
