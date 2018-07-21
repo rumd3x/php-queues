@@ -104,7 +104,7 @@
                     break;
                 }
             }
-            return booval($is_free);
+            return boolval($is_free);
         }
 
         public function isQueued(Queue $queue, $reread = true) {
@@ -116,7 +116,7 @@
                     break;
                 }
             }
-            return booval($is_queued);
+            return boolval($is_queued);
         }
 
         public function isRunning(Queue $queue, $reread = true) {
@@ -128,7 +128,7 @@
                     break;
                 }
             }
-            return booval($is_running);
+            return boolval($is_running);
         }
 
         private function readDriverFile() {
