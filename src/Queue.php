@@ -29,18 +29,22 @@
 
         public function execute() {
             $this->validate();
-            if ($this->action_type === self::ACTION_RUN_STATIC) {
-                $namespace = $this->action_string;
-                $namespace::run();
-            }
-            if ($this->action_type === self::ACTION_RUN_INSTANCE) {
-                $instance = new $this->action_string;
-                $instance->run();
-            }
-            if ($this->action_type === self::ACTION_RUN_FILE) {
-                include $this->action_string;
-            }
-            return $this;
+            try {
+                if ($this->action_type === self::ACTION_RUN_STATIC) {
+                    $namespace = $this->action_string;
+                    $namespace::run();
+                }
+                if ($this->action_type === self::ACTION_RUN_INSTANCE) {
+                    $instance = new $this->action_string;
+                    $instance->run();
+                }
+                if ($this->action_type === self::ACTION_RUN_FILE) {
+                    include $this->action_string;
+                }
+            } catch (Exception $e) {
+                return false;
+            }     
+            return true;
         }
 
         public function pushTo(string $queue) {
