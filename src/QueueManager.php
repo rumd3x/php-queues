@@ -144,7 +144,7 @@
                 } catch (Exception $e) {
                     $attempts++;
                 }
-            } while (!$success || $attempts < 255);
+            } while ($success || $attempts >= 255);
         }
 
         private function updateDriverFile() {
