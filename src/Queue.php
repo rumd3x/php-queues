@@ -60,6 +60,7 @@
 
         public function toArray() {
             return [
+                'qid' => $this->qid,
                 'queue_name' => $this->queue,
                 'action' => $this->action_string,
                 'action_type' => $this->action_type,
