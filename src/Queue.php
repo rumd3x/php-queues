@@ -97,7 +97,7 @@
         }
 
         private static function generateQid() {
-            return rand(10000000, 99999999);
+            return intval("0".rand(1,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9));
         }
 
         public static function parse($queue) {
