@@ -125,26 +125,28 @@
         private function readDriverFile() {
             $attempts = 0;
             $success = false;
+            if (!file_exists(self::$driver_filename)) {
+                $this->updateDriverFile();
+            }
             do {
-                if (!file_exists(self::$driver_filename)) {
-                    $this->updateDriverFile();
-                }
                 try {
                     $contents = file_get_contents(self::$driver_filename, FILE_TEXT);
-                    $driver_data = json_decode($contents);
-                    if (!isset($driver_data->running) || !is_array($driver_data->running)) {
-                        throw new Exception("Queues file doesnt have a valid array in the running property.");
+                    if ($contents) {
+                        $driver_data = json_decode($contents);
+                        if (!isset($driver_data->running) || !is_array($driver_data->running)) {
+                            throw new Exception("Queues file doesnt have a valid array in the running property.");
+                        }
+                        if (!isset($driver_data->queued) || !is_array($driver_data->queued)) {
+                            throw new Exception("Queues file doesnt have a valid array in the queued property.");
+                        }
+                        $this->running = Queue::parseMultiple($driver_data->running);
+                        $this->queued = Queue::parseMultiple($driver_data->queued);
+                        $success = true;
                     }
-                    if (!isset($driver_data->queued) || !is_array($driver_data->queued)) {
-                        throw new Exception("Queues file doesnt have a valid array in the queued property.");
-                    }
-                    $this->running = Queue::parseMultiple($driver_data->running);
-                    $this->queued = Queue::parseMultiple($driver_data->queued);
-                    $success = true;
                 } catch (Exception $e) {
                     $attempts++;
                 }
-            } while ($success || $attempts >= 255);
+            } while (!$success && $attempts < 255);
         }
 
         private function updateDriverFile() {
