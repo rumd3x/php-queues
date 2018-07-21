@@ -27,9 +27,10 @@
             return $this;
         }
 
-        public function execute() {
-            $this->validate();
+        public function execute() {            
+            $success = true;
             try {
+                $this->validate();
                 if ($this->action_type === self::ACTION_RUN_STATIC) {
                     $namespace = $this->action_string;
                     $namespace::run();
@@ -42,9 +43,9 @@
                     include $this->action_string;
                 }
             } catch (Exception $e) {
-                return false;
+                $success = false;
             }     
-            return true;
+            return $success;
         }
 
         public function pushTo(string $queue) {
