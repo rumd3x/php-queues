@@ -54,7 +54,9 @@
                 $this->updateDriverFile();
                 if ($queue->execute()) { unset($this->running[$key]); }                                
             } finally {
-                $this->running = array_values($this->running);
+                $running = array_values($this->running);
+                $this->readDriverFile();
+                $this->running = $running;
                 $this->updateDriverFile();
             }
         }
