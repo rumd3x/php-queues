@@ -97,7 +97,7 @@
         }
 
         private static function generateQid() {
-            return explode(".", uniqid("", true))[1];
+            return rand(10000000, 99999999);
         }
 
         public static function parse($queue) {
