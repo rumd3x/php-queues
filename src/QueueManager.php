@@ -27,7 +27,7 @@
             }
             $this->sortRunning();
             foreach ($this->running as $key => $queue) {
-                $this->realExecuteQueue($queue, $key);
+                $this->realExecuteQueue($queue);
             }
             return $this;
         }
@@ -42,22 +42,30 @@
             $this->sortRunning();
             foreach ($this->running as $key => $queue) {
                 if ($queue->getQueueName() === $queue_name) {
-                    $this->realExecuteQueue($queue, $key);
+                    $this->realExecuteQueue($queue);
                 }
             }
             return $this;
         }
 
-        private function realExecuteQueue(Queue $queue, int $key) {
+        private function realExecuteQueue(Queue $queue) {
             try {
                 $queue = $queue->setStarted();
                 $this->updateDriverFile();
-                if ($queue->execute()) { unset($this->running[$key]); }                                
-            } finally {
-                $running = array_values($this->running);
-                $this->readDriverFile();
-                $this->running = $running;
-                $this->updateDriverFile();
+                if ($queue->execute()) { 
+                    $this->readDriverFile();
+                    foreach($this->running as $key => $r) {
+                        if ($r->getQid() == $queue->getQid()) {
+                            unset($this->running[$key]); 
+                            break;
+                        }
+                    }
+                    $running = array_values($this->running);
+                    $this->running = $running;
+                    $this->updateDriverFile();
+                }                                
+            } catch (Exception $e) {
+                echo "Error \"{$e->getMessage()}\" at line {$e->getLine()} of file \"{$e->getFile()}\"";
             }
         }
 

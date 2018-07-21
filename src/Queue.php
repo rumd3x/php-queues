@@ -5,6 +5,7 @@
     use DateTime;
 
     class Queue {
+        private $qid;
         private $queue;
         private $action_type;
         private $action_string;
@@ -17,6 +18,7 @@
         const ACTION_RUN_FILE = 3;
 
         public function __construct(int $action_type) {
+            $this->qid = self::generateQid();
             $this->action_type = $action_type;
             $this->added_at = date('Y-m-d H:i:s');
             $this->attempts = 0;
@@ -88,9 +90,19 @@
             return $this;
         }
 
+        public function getQid() {
+            if (empty($this->qid)) { $this->qid = self::generateQid(); }
+            return $this->qid;
+        }
+
+        private static function generateQid() {
+            return explode(".", uniqid("", true))[1];
+        }
+
         public static function parse($queue) {
             $queue = (Array) $queue;
             $queueObj = new self($queue['action_type']);
+            $queueObj->qid = $queue['qid'];
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
             $queueObj->started_at = $queue['started_at'];
@@ -113,6 +125,7 @@
                 throw new Exception("Invalid queue action type");
             }
             if (empty($this->queue)) { throw new Exception("Queue name cannot be empty"); }
+            if (empty($this->qid)) { $this->qid = self::generateQid(); }
             if (empty($this->attempts)) { $this->attempts = 0; }
             if (empty($this->added_at)) { $this->added_at = date('Y-m-d H:i:s'); }
             if (empty($this->started_at)) { $this->started_at = null; }
