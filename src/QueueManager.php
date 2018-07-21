@@ -10,16 +10,7 @@
         private $queued = [];
 
         private function __construct() {
-            try {
-                if (!file_exists(self::$driver_filename)) {
-                    $this->updateDriverFile();
-                } else {
-                    $this->readDriverFile();
-                }            
-            } catch (Exception $e) {
-                $this->updateDriverFile();
-            }
-
+            $this->readDriverFile();
         }
 
         public static function getInstance() {
@@ -32,21 +23,11 @@
         public function runAll() {
             $this->readDriverFile();
             foreach($this->queued as $key => $queue) {
-                if ($this->isQueueFree($queue->getQueueName(), false)) {
-                    $this->running[] = $queue;
-                    unset($this->queued[$key]);
-                    $this->queued = array_values($this->queued);
-                    $this->updateDriverFile();
-                }
+                $this->addToRunningIfFree($queue, $key);
             }
             $this->sortRunning();
             foreach ($this->running as $key => $queue) {
-                $queue = $queue->setStarted();
-                $this->updateDriverFile();
-                $queue->execute();
-                unset($this->running[$key]);
-                $this->running = array_values($this->running);
-                $this->updateDriverFile();
+                $this->realExecuteQueue($queue, $key);
             }
             return $this;
         }
@@ -55,26 +36,36 @@
             $this->readDriverFile();
             foreach($this->queued as $key => $queue) {
                 if ($queue->getQueueName() === $queue_name) {
-                    if ($this->isQueueFree($queue_name, false)) {
-                        $this->running[] = $queue;
-                        unset($this->queued[$key]);
-                        $this->queued = array_values($this->queued);
-                        $this->updateDriverFile();
-                    }
+                    $this->addToRunningIfFree($queue, $key);
                 }
             }
             $this->sortRunning();
             foreach ($this->running as $key => $queue) {
                 if ($queue->getQueueName() === $queue_name) {
-                    $queue = $queue->setStarted();
-                    $this->updateDriverFile();
-                    $queue->execute();
-                    unset($this->running[$key]);
-                    $this->running = array_values($this->running);
-                    $this->updateDriverFile();
+                    $this->realExecuteQueue($queue, $key);
                 }
             }
             return $this;
+        }
+
+        private function realExecuteQueue(Queue $queue, int $key) {
+            try {
+                $queue = $queue->setStarted();
+                $this->updateDriverFile();
+                if ($queue->execute()) { unset($this->running[$key]); }                                
+            } finally {
+                $this->running = array_values($this->running);
+                $this->updateDriverFile();
+            }
+        }
+
+        private function addToRunningIfFree(Queue $queue, int $key, bool $reread = false) {
+            if ($this->isQueueFree($queue->getQueueName(), $reread)) {
+                $this->running[] = $queue;
+                unset($this->queued[$key]);
+                $this->queued = array_values($this->queued);
+                $this->updateDriverFile();
+            }
         }
 
         private function sortRunning() {
@@ -135,6 +126,9 @@
             $attempts = 0;
             $success = false;
             do {
+                if (!file_exists(self::$driver_filename)) {
+                    $this->updateDriverFile();
+                }
                 try {
                     $contents = file_get_contents(self::$driver_filename, FILE_TEXT);
                     $driver_data = json_decode($contents);
