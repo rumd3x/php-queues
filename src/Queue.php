@@ -3,9 +3,8 @@
 
     use Exception;
     use Carbon\Carbon;
-    use Rumd3x\BaseObject\BaseObject;
 
-    class Queue extends BaseObject {
+    class Queue {
         private $qid;
         private $queue;
         private $action_type;

@@ -11,12 +11,8 @@
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "repositories": [
-        { "type": "git", "url": "https://github.com/rumd3x/php-baseobject.git" }
-    ],
 	"require": {
         "php": ">=7.0",
-        "rumd3x/php-baseobject": "*",
         "nesbot/carbon": "^1.33"
     },
     "autoload": {
