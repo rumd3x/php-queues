@@ -2,9 +2,10 @@
     namespace Rumd3x\Queues;
 
     use Exception;
-    use DateTime;
+    use Carbon\Carbon;
+    use Rumd3x\BaseObject\BaseObject;
 
-    class Queue {
+    class Queue extends BaseObject {
         private $qid;
         private $queue;
         private $action_type;
@@ -20,7 +21,7 @@
         public function __construct(int $action_type) {
             $this->qid = self::generateQid();
             $this->action_type = $action_type;
-            $this->added_at = date('Y-m-d H:i:s');
+            $this->added_at = Carbon::now();
             $this->attempts = 0;
         }
 
@@ -82,11 +83,11 @@
         }
 
         public function getAddedAtAsDateTime() {
-            return DateTime::createFromFormat('Y-m-d H:i:s', $this->added_at);
+            return Carbon::createFromFormat('Y-m-d H:i:s', $this->added_at);
         }
 
         public function setStarted() {
-            if (!isset($this->started_at)) $this->started_at = date('Y-m-d H:i:s');
+            if (!isset($this->started_at)) $this->started_at = Carbon::now();
             $this->attempts++;
             return $this;
         }
@@ -97,12 +98,20 @@
         }
 
         private static function generateQid() {
-            return intval("0".rand(1,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9));
+            $qm = QueueManager::getInstance();
+            $queues = array_merge($qm->getQueued(), $qm->getRunning());
+            $qids = [];
+            foreach($queues as $queue) {
+                $qids[] = $queue->qid;
+            }
+            $qid = max($qids);
+            $qid++;
+            return $qid;
         }
 
         public static function parse($queue) {
             $queue = (Array) $queue;
-            $queueObj = new self($queue['action_type']);
+            $queueObj = new static($queue['action_type']);
             $queueObj->qid = $queue['qid'];
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
@@ -128,7 +137,7 @@
             if (empty($this->queue)) { throw new Exception("Queue name cannot be empty"); }
             if (empty($this->qid)) { $this->qid = self::generateQid(); }
             if (empty($this->attempts)) { $this->attempts = 0; }
-            if (empty($this->added_at)) { $this->added_at = date('Y-m-d H:i:s'); }
+            if (empty($this->added_at)) { $this->added_at = Carbon::now(); }
             if (empty($this->started_at)) { $this->started_at = null; }
             return $this;
         }
