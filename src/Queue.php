@@ -64,8 +64,8 @@
                 'queue_name' => $this->queue,
                 'action' => $this->action_string,
                 'action_type' => $this->action_type,
-                'started_at' => $this->started_at,
-                'added_at' => $this->added_at,
+                'started_at' => empty($this->started_at) ? null : $this->started_at->format('Y-m-d H:i:s'),
+                'added_at' => empty($this->added_at) ? null : $this->added_at->format('Y-m-d H:i:s'),
                 'attempts' => $this->attempts,
             ];
         }
@@ -117,8 +117,8 @@
             $queueObj = new static($queue['action_type'], $queue['qid']);
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
-            $queueObj->started_at = $queue['started_at'];
-            $queueObj->added_at = Carbon::createFromFormat($queue['added_at']);
+            $queueObj->started_at = Carbon::createFromFormat('Y-m-d H:i:s', $queue['started_at']);
+            $queueObj->added_at = Carbon::createFromFormat('Y-m-d H:i:s', $queue['added_at']);
             $queueObj->attempts = $queue['attempts'];
             $queueObj->validate();
             return $queueObj;
