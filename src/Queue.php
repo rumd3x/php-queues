@@ -97,6 +97,7 @@
         }
 
         private static function generateQid() {
+            /*
             $qm = QueueManager::getInstance();
             $queues = array_merge($qm->getQueued(), $qm->getRunning());
             $qids = [];
@@ -109,6 +110,9 @@
                 $qid = max($qids);
             }
             $qid++;
+            */
+
+            $qid = random_int(1, 9999999);
             return $qid;
         }
 
