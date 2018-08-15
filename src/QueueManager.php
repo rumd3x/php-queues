@@ -80,18 +80,18 @@
 
         private function sortRunning() {
             usort($this->running, function($a, $b) {
-                if ($a->getAddedAtAsDateTime() == $b->getAddedAtAsDateTime()) return 0;
-                if ($a->getAddedAtAsDateTime() > $b->getAddedAtAsDateTime()) return 1;
-                if ($a->getAddedAtAsDateTime() < $b->getAddedAtAsDateTime()) return -1;
+                if ($a->getAddedAt() == $b->getAddedAt()) return 0;
+                if ($a->getAddedAt() > $b->getAddedAt()) return 1;
+                if ($a->getAddedAt() < $b->getAddedAt()) return -1;
             });
             return $this;
         }
 
         private function sortQueues() {
             usort($this->queued, function($a, $b) {
-                if ($a->getAddedAtAsDateTime() == $b->getAddedAtAsDateTime()) return 0;
-                if ($a->getAddedAtAsDateTime() > $b->getAddedAtAsDateTime()) return 1;
-                if ($a->getAddedAtAsDateTime() < $b->getAddedAtAsDateTime()) return -1;
+                if ($a->getAddedAt() == $b->getAddedAt()) return 0;
+                if ($a->getAddedAt() > $b->getAddedAt()) return 1;
+                if ($a->getAddedAt() < $b->getAddedAt()) return -1;
             });
             return $this;
         }

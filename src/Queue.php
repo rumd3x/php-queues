@@ -81,8 +81,8 @@
             ];
         }
 
-        public function getAddedAtAsDateTime() {
-            return Carbon::createFromFormat('Y-m-d H:i:s', $this->added_at);
+        public function getAddedAt() {
+            return $this->added_at;
         }
 
         public function setStarted() {
@@ -118,7 +118,7 @@
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
             $queueObj->started_at = $queue['started_at'];
-            $queueObj->added_at = $queue['added_at'];
+            $queueObj->added_at = Carbon::createFromFormat($queue['added_at']);
             $queueObj->attempts = $queue['attempts'];
             $queueObj->validate();
             return $queueObj;
