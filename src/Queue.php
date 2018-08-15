@@ -97,7 +97,6 @@
         }
 
         private static function generateQid() {
-            /*
             $qm = QueueManager::getInstance();
             $queues = array_merge($qm->getQueued(), $qm->getRunning());
             $qids = [];
@@ -110,9 +109,6 @@
                 $qid = max($qids);
             }
             $qid++;
-            */
-
-            $qid = random_int(1, 9999999);
             return $qid;
         }
 
@@ -121,8 +117,8 @@
             $queueObj = new static($queue['action_type'], $queue['qid']);
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
-            $queueObj->started_at = Carbon::createFromFormat('Y-m-d H:i:s', $queue['started_at']);
-            $queueObj->added_at = Carbon::createFromFormat('Y-m-d H:i:s', $queue['added_at']);
+            $queueObj->started_at = empty($queue['started_at']) ? null : Carbon::createFromFormat('Y-m-d H:i:s', $queue['started_at']);
+            $queueObj->added_at = empty($queue['added_at']) ? Carbon::now() : Carbon::createFromFormat('Y-m-d H:i:s', $queue['added_at']);
             $queueObj->attempts = $queue['attempts'];
             $queueObj->validate();
             return $queueObj;
