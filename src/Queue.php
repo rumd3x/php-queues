@@ -17,8 +17,8 @@
         const ACTION_RUN_INSTANCE = 2;
         const ACTION_RUN_FILE = 3;
 
-        public function __construct(int $action_type) {
-            $this->qid = self::generateQid();
+        public function __construct(int $action_type, int $qid = NULL) {
+            $this->qid = empty($qid) ? self::generateQid() : $qid;
             $this->action_type = $action_type;
             $this->added_at = Carbon::now();
             $this->attempts = 0;
@@ -103,15 +103,18 @@
             foreach($queues as $queue) {
                 $qids[] = $queue->qid;
             }
-            $qid = max($qids);
+            if (empty($qids)) {
+                $qid = 0;
+            } else {
+                $qid = max($qids);
+            }
             $qid++;
             return $qid;
         }
 
         public static function parse($queue) {
             $queue = (Array) $queue;
-            $queueObj = new static($queue['action_type']);
-            $queueObj->qid = $queue['qid'];
+            $queueObj = new static($queue['action_type'], $queue['qid']);
             $queueObj->queue = $queue['queue_name'];
             $queueObj->action_string = $queue['action'];
             $queueObj->started_at = $queue['started_at'];
