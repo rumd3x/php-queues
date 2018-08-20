@@ -6,6 +6,7 @@ A nice and easy to use PHP utility for handling queues and script executing with
 To install via composer add this to your composer.json
 ```json
 "minimum-stability": "dev",
+"prefer-stable": true
 ```
 And then run
 ```sh
