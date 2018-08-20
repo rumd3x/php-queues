@@ -19,10 +19,5 @@
         "psr-4": {
             "Rumd3x\\Queues\\": "src/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "master"
-        }
     }
 }
