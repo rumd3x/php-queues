@@ -1,7 +1,7 @@
 {
     "name": "rumd3x/php-queues",
     "description": "A simple driver for managing queues in php.",
-    "type": "project",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
