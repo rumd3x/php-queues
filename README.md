@@ -3,14 +3,9 @@ A nice and easy to use PHP utility for handling queues and script executing with
 
 
 ## Installation
-To install via composer add this to your composer.json
-```json
-"minimum-stability": "dev",
-"prefer-stable": true
-```
-And then run
+To install via composer just run
 ```sh
-  composer require "rumd3x/php-queues:*"
+  composer require rumd3x/php-queues
 ```
 
 
